@@ -1,2 +1,2 @@
-# blockchain_course
+# blockchain course
 Blockchain classwork (Assignments and practice)
