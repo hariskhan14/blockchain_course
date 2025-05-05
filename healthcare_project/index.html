@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PHR Records</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 20px;
+        }
+        .card {
+            background: #fff;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 16px;
+            margin-bottom: 16px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            font-family: Consolas, monospace;
+        }
+        .card h2 {
+            margin-top: 0;
+            font-size: 1.2em;
+        }
+        .card p {
+            margin: 8px 0;
+        }
+    </style>
+</head>
+<body>
+<h1>PHR Records</h1>
+<div id="records"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/web3@1.8.0/dist/web3.min.js"></script>
+<script>
+    const web3 = new Web3('http://127.0.0.1:8545');
+    const abi  = [
+        {
+            "inputs": [
+                {
+                    "internalType": "string",
+                    "name": "patientId",
+                    "type": "string"
+                },
+                {
+                    "internalType": "bytes32",
+                    "name": "fileHash",
+                    "type": "bytes32"
+                }
+            ],
+            "name": "addRecord",
+            "outputs": [],
+            "stateMutability": "nonpayable",
+            "type": "function"
+        },
+        {
+            "inputs": [],
+            "stateMutability": "nonpayable",
+            "type": "constructor"
+        },
+        {
+            "inputs": [],
+            "name": "admin",
+            "outputs": [
+                {
+                    "internalType": "address",
+                    "name": "",
+                    "type": "address"
+                }
+            ],
+            "stateMutability": "view",
+            "type": "function"
+        },
+        {
+            "inputs": [],
+            "name": "recordCount",
+            "outputs": [
+                {
+                    "internalType": "uint256",
+                    "name": "",
+                    "type": "uint256"
+                }
+            ],
+            "stateMutability": "view",
+            "type": "function"
+        },
+        {
+            "inputs": [
+                {
+                    "internalType": "uint256",
+                    "name": "",
+                    "type": "uint256"
+                }
+            ],
+            "name": "records",
+            "outputs": [
+                {
+                    "internalType": "string",
+                    "name": "patientId",
+                    "type": "string"
+                },
+                {
+                    "internalType": "bytes32",
+                    "name": "hash",
+                    "type": "bytes32"
+                },
+                {
+                    "internalType": "uint256",
+                    "name": "timestamp",
+                    "type": "uint256"
+                }
+            ],
+            "stateMutability": "view",
+            "type": "function"
+        }
+    ]
+    const address = '0x8A73F2E91968D0eD571E135d0e0031f18f8EAce7';
+    const phr = new web3.eth.Contract(abi, address);
+
+    async function load() {
+        const count = await phr.methods.recordCount().call();
+        const container = document.getElementById('records');
+        for (let i = 0; i < count; i++) {
+            const r = await phr.methods.records(i).call();
+            const card = document.createElement('div');
+            card.className = 'card';
+            card.innerHTML = `
+          <h2>Patient ID: ${r.patientId}</h2>
+          <p><strong>Hash:</strong> ${r.hash}</p>
+          <p><strong>Time:</strong> ${new Date(r.timestamp * 1000).toLocaleString()}</p>
+          <p><a href="phr-demo/${r.patientId}.pdf.enc" download>Download Encrypted File</a></p>
+        `;
+            container.appendChild(card);
+        }
+    }
+    window.addEventListener('load', load);
+</script>
+</body>
+</html>
