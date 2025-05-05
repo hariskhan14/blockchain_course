@@ -169,3 +169,12 @@ cython_debug/
 
 # PyPI configuration file
 .pypirc
+
+node_modules
+healthcare_project/node_modules
+healthcare_project/node_modules/
+healthcare_project/node_modules*
+node_modules/
+.idea
+/.idea/
+/node_modules/
